@@ -11,7 +11,6 @@ extern "C" int main_cpp(const char *kernel_ptx) {
   CUmodule cudaModule;
   CUcontext context;
   CUfunction function;
-  CUlinkState linker;
   int devCount;
 
   // CUDA initialization
@@ -24,7 +23,10 @@ extern "C" int main_cpp(const char *kernel_ptx) {
   std::cout << "Using CUDA Device [0]: " << name << "\n";
 
   int devMajor, devMinor;
-  checkCudaErrors(cuDeviceComputeCapability(&devMajor, &devMinor, device));
+  checkCudaErrors(cuDeviceGetAttribute(
+      &devMajor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, device));
+  checkCudaErrors(cuDeviceGetAttribute(
+      &devMinor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, device));
   std::cout << "Device Compute Capability: " << devMajor << "." << devMinor
             << "\n";
   if (devMajor < 2) {
