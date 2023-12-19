@@ -1,3 +1,4 @@
+workspace = { members = ["dfunc"] }
 [package]
 name = "llvm-ptx"
 version = "0.1.0"
@@ -6,6 +7,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+dfunc = {path = "dfunc"}
+
+# This uses https://github.com/rust-lang/rfcs/blob/master/text/3176-cargo-multi-dep-artifacts.md
+# and https://github.com/rust-lang/cargo/issues/9096, would be viable if
+# artifact=llvm-ir (or artifact=llvm-bc) was valid.
+#
+# dfunc-device = {package = "dfunc", path = "dfunc", target="nvptx64-nvidia-cuda", artifact="staticlib"}
 
 [build-dependencies]
+cargo_metadata = "0.18.1"
 cc = "1.0.83"

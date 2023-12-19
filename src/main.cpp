@@ -36,7 +36,7 @@ extern "C" int main_cpp(const char *kernel_ptx) {
 
   std::ifstream t(kernel_ptx);
   if (!t.is_open()) {
-    std::cerr << "kernel.ptx not found\n";
+    std::cerr << kernel_ptx << ": file not found\n";
     return 1;
   }
   std::string str((std::istreambuf_iterator<char>(t)),
