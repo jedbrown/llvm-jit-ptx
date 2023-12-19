@@ -1,6 +1,7 @@
 workspace = { members = ["dfunc"] }
+
 [package]
-name = "llvm-ptx"
+name = "llvm-jit-ptx"
 version = "0.1.0"
 edition = "2021"
 

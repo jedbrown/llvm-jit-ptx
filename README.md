@@ -1,4 +1,8 @@
-# llvm-ptx
+# llvm-jit-ptx
+
+This demonstrates run-time fusion of a kernel that calles a device function. The device functions go in the [dfunc](dfunc/) crate, which is `no_std` and included both as a regular crate on the host (where it's easily tested) and compiled to LLVM-IR.
+
+In one mode, `build.rs` compiles to PTX. In the second, the linking and compilation to PTX is done at run-time. Either way, the PTX is loaded and run using the CUDA device API.
 
 ## Notes
 

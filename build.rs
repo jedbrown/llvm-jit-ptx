@@ -30,6 +30,7 @@ fn main() {
     println!("cargo:rerun-if-changed=src/kernel.ll");
 
     // Build dfunc crate
+    println!("cargo:rerun-if-changed=dfunc/src/lib.rs");
     let mut command = Command::new(env::var("CARGO").unwrap())
         .args([
             "rustc",
