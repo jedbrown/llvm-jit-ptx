@@ -7,7 +7,7 @@ extern "C" {
 }
 
 fn main() {
-    println!("Rust can add: 1.0 + 2.0 = {}", dfunc::add(1.0, 2.0));
+    println!("Rust can math: 1.0 + 2.0^3 = {}", dfunc::add(1.0, 2.0));
     let out_dir = env!("OUT_DIR");
 
     let kernel_ptx = CString::new(format!("{}/{}", out_dir, "kernel.ptx")).unwrap();

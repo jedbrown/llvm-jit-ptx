@@ -96,7 +96,7 @@ extern "C" int main_cpp(const char *kernel_ptx) {
 
   std::cout << "Results:\n";
   for (unsigned i = 0; i != 16; ++i) {
-    std::cout << hostA[i] << " + " << hostB[i] << " = " << hostC[i] << "\n";
+    std::cout << hostA[i] << " + " << hostB[i] << "^3 = " << hostC[i] << "\n";
   }
 
   // Clean up after ourselves

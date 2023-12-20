@@ -39,9 +39,11 @@ fn main() {
             "--message-format=json-render-diagnostics",
             "--target=nvptx64-nvidia-cuda",
             "--target-dir=target/device",
+            // "-Zbuild-std",
             "--",
             "--emit=llvm-ir",
-            // "-Zbuild-std",
+            // "-Clto",
+            // "-Cembed-bitcode",
         ])
         .stdout(Stdio::piped())
         .spawn()
@@ -56,7 +58,7 @@ fn main() {
             Message::CompilerArtifact(artifact) => {
                 println!("{:?}", artifact);
                 for file in artifact.filenames {
-                    if file.extension().unwrap() != "rmeta" {
+                    if !file.extension().is_some_and(|ext| ext == "rmeta") {
                         continue;
                     };
                     // libdfunc-9294c53df299f0c6.rmeta -> dfunc-9294c53df299f0c6.ll
@@ -66,7 +68,10 @@ fn main() {
                         .strip_prefix("lib")
                         .expect(&format!("Expected to start with lib: {file}"));
                     let ll = file.parent().unwrap().join(ll).with_extension("ll");
-                    assert!(ll.exists(), "Missing LLVM-IR");
+                    if !ll.exists() {
+                        eprintln!("Ignoring missing LLVM-IR: {}", ll);
+                        continue;
+                    }
                     llvm_ir.insert(artifact.target.name.clone(), ll);
                 }
             }

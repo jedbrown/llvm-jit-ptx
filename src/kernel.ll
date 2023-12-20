@@ -5,8 +5,10 @@ target triple = "nvptx64-nvidia-cuda"
 declare i32 @llvm.nvvm.read.ptx.sreg.tid.x() readnone nounwind
 
 define float @add(float noundef %0, float noundef %1) local_unnamed_addr #0 {
-  %3 = fadd float %0, %1
-  ret float %3
+  %3 = fmul float %1, %1
+  %4 = fmul float %1, %3
+  %5 = fadd float %0, %4
+  ret float %5
 }
 
 define void @kernel(float addrspace(1)* %A,

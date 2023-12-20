@@ -1,7 +1,11 @@
 #![no_std]
 
+#[cfg(not(test))]
+use num_traits::float::FloatCore;
+//use num_traits::Float;
+
 pub fn add(left: f32, right: f32) -> f32 {
-    left + right
+    left + right.powi(3)
 }
 
 #[no_mangle]
@@ -16,6 +20,6 @@ mod tests {
     #[test]
     fn it_works() {
         let result = add(2.0, 2.0);
-        assert_eq!(result, 4.0);
+        assert_eq!(result, 10.0);
     }
 }
