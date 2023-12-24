@@ -3,7 +3,8 @@
 #include <fstream>
 #include <iostream>
 
-void checkCudaErrors(CUresult err) { assert(err == CUDA_SUCCESS); }
+#define checkCudaErrors(err)                                                   \
+  { assert(err == CUDA_SUCCESS); }
 
 /// main - Program entry point
 extern "C" int main_cpp(const char *kernel_ptx) {
