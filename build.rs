@@ -51,8 +51,9 @@ fn main() {
         .arg("-C")
         .arg(format!("target-cpu=sm_{capability}"))
         .arg("--emit=llvm-ir")
-        //.arg("-Clto")
-        //.arg("-Cembed-bitcode")
+        .arg("-Clto=fat")
+        .arg("-Cembed-bitcode=yes")
+        .arg("-Zdylib-lto")
         .stdout(Stdio::piped())
         .spawn()
         .expect("Failed to spawn cargo build for dfunc on device");

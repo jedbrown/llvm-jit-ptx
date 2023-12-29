@@ -18,7 +18,9 @@ extern "C" {
 
 #[cfg(feature = "enzyme")]
 mod swirl {
-    use super::{log1pf, FloatCore};
+    use super::log1pf;
+    #[cfg(not(test))]
+    use super::FloatCore;
     use autodiff::autodiff;
     #[autodiff(d_swirl_impl, Reverse, Active)]
     fn swirl_impl(#[dup] a: &[f32; 2]) -> f32 {
@@ -52,28 +54,34 @@ mod swirl {
 pub use swirl::{d_swirl, swirl};
 
 #[no_mangle]
-extern "C" fn dfunc_swirl(left: f32, right: f32) -> f32 {
+pub extern "C" fn dfunc_swirl(left: f32, right: f32) -> f32 {
     swirl(left, right)
 }
 
 #[no_mangle]
-extern "C" fn dfunc_d_swirl(left: f32, right: f32) -> f32 {
+pub extern "C" fn dfunc_d_swirl(left: f32, right: f32) -> f32 {
     d_swirl(left, right)
 }
 
 #[cfg(test)]
 mod tests {
     #[test]
-    fn math() {
-        let result = super::swirl(2.0, 3.0);
-        assert_eq!(29., result);
+    fn swirl() {
+        let result = super::swirl(0.0, 2.0);
+        assert_eq!(8.0, result);
     }
 
-    #[cfg(none)]
-    fn fwd() {
-        let x = f(&[2.0, 3.0]);
-        assert_eq!(29.0, x);
-        let y = d_f(&[2.0, 3.0], &[0.0, 4.0]);
-        assert_eq!(108.0, y);
+    #[test]
+    fn d_swirl() {
+        let result = super::d_swirl(1.0, 2.0);
+        assert_eq!(12.5, result);
+    }
+
+    #[test]
+    fn extern_c() {
+        let result = super::dfunc_swirl(0.0, 2.0);
+        assert_eq!(8.0, result);
+        let dresult = super::dfunc_d_swirl(1.0, 2.0);
+        assert_eq!(12.5, dresult);
     }
 }

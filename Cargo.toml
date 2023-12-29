@@ -27,3 +27,6 @@ lto = "fat"
 
 [profile.dev]
 lto = "fat"
+
+[profile.test]
+lto = "fat"
