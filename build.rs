@@ -15,15 +15,17 @@ fn main() {
     println!("cargo:rustc-link-lib=dylib=cuda");
     println!("cargo:rerun-if-changed=src/main.cpp");
 
+    let capability = cuda_device_capability();
+    println!("cargo:rustc-env=CARGO_CUDA_COMPUTE_CAPABILITY={capability}");
+
+    let feature_enzyme = env::var("CARGO_FEATURE_ENZYME_DEVICE").is_ok();
     let out_dir = env::var("OUT_DIR").unwrap();
     let out_dir = Path::new(&out_dir);
     let status = Command::new("llc")
-        .args([
-            "-mcpu=sm_86",
-            "src/kernel.ll",
-            "-o",
-            out_dir.join("kernel.ptx").to_str().unwrap(),
-        ])
+        .arg(format!("-mcpu=sm_{capability}"))
+        .arg("src/kernel.ll")
+        .arg("-o")
+        .arg(out_dir.join("kernel.ptx").to_str().unwrap())
         .status()
         .expect("Failed to run llc");
     assert!(status.success(), "Failed to compile kernel LLVM IR to PTX");
@@ -32,19 +34,25 @@ fn main() {
     // Build dfunc crate
     println!("cargo:rerun-if-changed=dfunc/src/lib.rs");
     let mut command = Command::new(env::var("CARGO").unwrap())
-        .args([
-            "rustc",
-            "--release", // Kernels are failing when debug is present
-            "--package=dfunc",
-            "--message-format=json-render-diagnostics",
-            "--target=nvptx64-nvidia-cuda",
-            "--target-dir=target/device",
-            // "-Zbuild-std",
-            "--",
-            "--emit=llvm-ir",
-            // "-Clto",
-            // "-Cembed-bitcode",
-        ])
+        .arg("rustc")
+        .arg("--release") // Kernels are failing when debug is present and we
+        // don't do it on GPU anyway
+        .arg("--package=dfunc")
+        .arg(if feature_enzyme {
+            "--features=enzyme"
+        } else {
+            "--features="
+        })
+        .arg("--message-format=json-render-diagnostics")
+        .arg("--target=nvptx64-nvidia-cuda")
+        .arg("--target-dir=target/device") // To avoid lock conflict with outer cargo
+        .arg("-Zbuild-std")
+        .arg("--")
+        .arg("-C")
+        .arg(format!("target-cpu=sm_{capability}"))
+        .arg("--emit=llvm-ir")
+        //.arg("-Clto")
+        //.arg("-Cembed-bitcode")
         .stdout(Stdio::piped())
         .spawn()
         .expect("Failed to spawn cargo build for dfunc on device");
@@ -75,12 +83,6 @@ fn main() {
                     llvm_ir.insert(artifact.target.name.clone(), ll);
                 }
             }
-            // Message::BuildScriptExecuted(script) => {
-            //     println!("{:?}", script);
-            // }
-            // Message::BuildFinished(finished) => {
-            //     println!("{:?}", finished);
-            // }
             _ => (), // Unknown message
         }
     }
@@ -95,4 +97,18 @@ fn main() {
             ll
         );
     }
+}
+
+fn cuda_device_capability() -> i32 {
+    let capability = Command::new("nvidia-smi")
+        .args(["--query-gpu=compute_cap", "--format=csv,noheader"])
+        .output()
+        .expect("Failed to execute nvidia-smi to determine compute capability");
+    // "8.6\n" (bytes)
+    let capability = String::from_utf8(capability.stdout)
+        .unwrap()
+        .trim_end()
+        .parse::<f64>()
+        .expect("Failed to parse compute capability");
+    (capability * 10.) as i32 // 86
 }

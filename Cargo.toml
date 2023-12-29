@@ -5,10 +5,12 @@ name = "llvm-jit-ptx"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+enzyme-host = ["dfunc/enzyme"]
+enzyme-device = []
 
 [dependencies]
-dfunc = {path = "dfunc"}
+dfunc = { path = "dfunc" } # features = ["enzyme"]
 
 # This uses https://github.com/rust-lang/rfcs/blob/master/text/3176-cargo-multi-dep-artifacts.md
 # and https://github.com/rust-lang/cargo/issues/9096, would be viable if

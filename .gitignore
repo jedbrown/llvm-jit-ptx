@@ -5,3 +5,6 @@ tmp/
 
 target/
 Cargo.lock
+*.ptx
+*.o
+*.s

@@ -22,7 +22,7 @@ entry:
 
   ; Compute C = A + B
   ;; %valC = fadd float %valA, %valB
-  %valC = tail call float @dfunc_swirl(float noundef %valA, float noundef %valB)
+  %valC = tail call float @dfunc_d_swirl(float noundef %valA, float noundef %valB)
 
   ; Store back to C
   store float %valC, float addrspace(1)* %ptrC, align 4
@@ -30,7 +30,7 @@ entry:
   ret void
 }
 
-declare dso_local noundef float @dfunc_swirl(float noundef, float noundef)
+declare dso_local noundef float @dfunc_d_swirl(float noundef, float noundef)
 
 !nvvm.annotations = !{!0}
 !0 = !{void (float addrspace(1)*,
