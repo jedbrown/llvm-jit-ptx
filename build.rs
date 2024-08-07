@@ -14,6 +14,7 @@ fn main() {
         .compile("main_cpp");
     println!("cargo:rustc-link-lib=dylib=cuda");
     println!("cargo:rerun-if-changed=src/main.cpp");
+    println!("cargo::rustc-check-cfg=cfg(enzyme)");
 
     let capability = cuda_device_capability();
     println!("cargo:rustc-env=CARGO_CUDA_COMPUTE_CAPABILITY={capability}");
@@ -46,7 +47,7 @@ fn main() {
         .arg("--message-format=json-render-diagnostics")
         .arg("--target=nvptx64-nvidia-cuda")
         .arg("--target-dir=target/device") // To avoid lock conflict with outer cargo
-        .arg("-Zbuild-std")
+        //.arg("-Zbuild-std")
         .arg("--")
         .arg("-C")
         .arg(format!("target-cpu=sm_{capability}"))

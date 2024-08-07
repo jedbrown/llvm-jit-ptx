@@ -20,15 +20,21 @@ fn main() {
     );
     unsafe { main_cpp(kernel_ptx.as_ptr()) };
 
-    let kernel_ptx = jit_compile_ptx(Path::new("src/kernel_only.ll"), capability);
-    println!("Kernel from online ptx: {}", kernel_ptx.to_string_lossy());
-    let kernel_ptx = CString::new(kernel_ptx.to_str().unwrap()).unwrap();
+    let kernel_ptx = CString::new("kernel.ptx").unwrap();
+    println!("kernel.ptx: {}", kernel_ptx.to_string_lossy());
     unsafe { main_cpp(kernel_ptx.as_ptr()) };
 
-    let kernel_ptx = jit_compile_ptx(Path::new("src/kernel_only_d.ll"), capability);
-    println!("Kernel from online ptx: {}", kernel_ptx.to_string_lossy());
-    let kernel_ptx = CString::new(kernel_ptx.to_str().unwrap()).unwrap();
-    unsafe { main_cpp(kernel_ptx.as_ptr()) };
+    if false {
+        let kernel_ptx = jit_compile_ptx(Path::new("src/kernel_only.ll"), capability);
+        println!("Kernel from online ptx: {}", kernel_ptx.to_string_lossy());
+        let kernel_ptx = CString::new(kernel_ptx.to_str().unwrap()).unwrap();
+        unsafe { main_cpp(kernel_ptx.as_ptr()) };
+
+        let kernel_ptx = jit_compile_ptx(Path::new("src/kernel_only_d.ll"), capability);
+        println!("Kernel from online ptx: {}", kernel_ptx.to_string_lossy());
+        let kernel_ptx = CString::new(kernel_ptx.to_str().unwrap()).unwrap();
+        unsafe { main_cpp(kernel_ptx.as_ptr()) };
+    }
 }
 
 fn jit_compile_ptx(kernel_only: &Path, capability: &str) -> PathBuf {
@@ -37,12 +43,15 @@ fn jit_compile_ptx(kernel_only: &Path, capability: &str) -> PathBuf {
         .strip_prefix("src")
         .unwrap()
         .to_path_buf();
-    let ll = env!("CARGO_LLVM_IR_FILE_DFUNC");
+    // let ll = env!("CARGO_LLVM_IR_FILE_DFUNC");
+    let ll = "target/device/nvptx64-nvidia-cuda/release/libdfunc.rlib";
+    //    let ll = "src/dfunc-cuda-nvptx64-nvidia-cuda-sm_86.ll";
     let mut bitcode = Command::new("llvm-link")
         .args([
             kernel_only.to_str().unwrap(),
             ll,
             "/opt/cuda/nvvm/libdevice/libdevice.10.bc",
+            "--ignore-non-bitcode",
             "--internalize",
             "--only-needed",
         ])

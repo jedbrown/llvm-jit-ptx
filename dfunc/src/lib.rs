@@ -39,8 +39,11 @@ mod swirl {
 #[cfg(not(feature = "enzyme"))]
 mod swirl {
     use super::{log1pf, FloatCore};
+    use diman::si::{dimensions::Temperature, units::kelvins};
+
     pub fn swirl(left: f32, right: f32) -> f32 {
-        (unsafe { log1pf(left) }) + right.powi(3)
+        let temperature: Temperature<f32> = 293.15 * kelvins;
+        (unsafe { log1pf(left) }) + right.powi(3) + temperature.value_in(kelvins)
     }
 
     pub fn d_swirl(left: f32, right: f32) -> f32 {
