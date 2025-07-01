@@ -24,7 +24,7 @@ fn main() {
     println!("kernel.ptx: {}", kernel_ptx.to_string_lossy());
     unsafe { main_cpp(kernel_ptx.as_ptr()) };
 
-    if false {
+    if true {
         let kernel_ptx = jit_compile_ptx(Path::new("src/kernel_only.ll"), capability);
         println!("Kernel from online ptx: {}", kernel_ptx.to_string_lossy());
         let kernel_ptx = CString::new(kernel_ptx.to_str().unwrap()).unwrap();

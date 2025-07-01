@@ -6,7 +6,8 @@ edition = "2021"
 [features]
 default = []
 enzyme = []
+diman = ["dep:diman"]
 
 [dependencies]
 num-traits = {version = "0.2.19", default-features = false}
-diman = { path = "/home/jed/src/diman", default-features = false, features = ["f32", "si"] }
+diman = { path = "/home/jed/src/diman", default-features = false, features = ["f32", "si"], optional = true }

@@ -10,7 +10,7 @@ edition = "2021"
 #enzyme-device = []
 
 [dependencies]
-cudarc = { version = "0.11.8", default-features = false, features = ["driver", "cuda-version-from-build-system"] }
+cudarc = { version = "0.16.6", default-features = false, features = ["driver", "cuda-version-from-build-system", "dynamic-loading"] }
 dfunc = { path = "dfunc" } # features = ["enzyme"]
 
 # This uses https://github.com/rust-lang/rfcs/blob/master/text/3176-cargo-multi-dep-artifacts.md
@@ -20,8 +20,8 @@ dfunc = { path = "dfunc" } # features = ["enzyme"]
 # dfunc-device = {package = "dfunc", path = "dfunc", target="nvptx64-nvidia-cuda", artifact="staticlib"}
 
 [build-dependencies]
-cargo_metadata = "0.18.1"
-cc = "1.1.7"
+cargo_metadata = "0.20.0"
+cc = "1.2.27"
 
 [profile.release]
 lto = "fat"
